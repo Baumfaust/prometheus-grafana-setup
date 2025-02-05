@@ -146,6 +146,23 @@ echo ""
 # ---------------------- Configure Firewall ----------------------
 
 echo ""
+echo "📌 Ensuring iptables is installed..."
+sudo apt install -y iptables iptables-persistent
+check_success
+
+echo "📌 Creating default iptables rules file if missing..."
+if [ ! -f /etc/iptables/rules.v4 ]; then
+    sudo mkdir -p /etc/iptables
+    sudo tee /etc/iptables/rules.v4 > /dev/null <<EOF
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+EOF
+fi
+
+echo ""
 echo "📌 Configuring Firewall..."
 info "Updating firewall rules"
 RULES=(
@@ -174,6 +191,8 @@ fi
 check_success
 
 echo ""
+echo "📌 Saving firewall rules..."
+sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null
 
 # ---------------------- Final Status Check ----------------------
 
