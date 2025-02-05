@@ -19,8 +19,8 @@ This **automated setup script** installs and configures:
 ```
 git clone https://github.com/your-repo/prometheus-grafana-setup.git
 cd prometheus-grafana-setup
-chmod +x setup.sh
-./setup.sh
+chmod +x install_monitoring.sh
+./install_monitoring.sh
 ```
 
 ### 2️⃣ **Wait for Installation**  
