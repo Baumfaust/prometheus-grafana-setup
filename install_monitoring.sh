@@ -46,12 +46,13 @@ install_node_exporter() {
   NODE_EXPORTER_VERSION=$(curl -s https://api.github.com/repos/prometheus/node_exporter/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
   check_success
 
-  echo "📌 Installing Node Exporter ($NODE_EXPORTER_VERSION)..."
+  echo "📌 Downloading Node Exporter ($NODE_EXPORTER_VERSION)..."
   cd /usr/local/bin
-  wget https://github.com/prometheus/node_exporter/releases/download/$NODE_EXPORTER_VERSION/node_exporter-${NODE_EXPORTER_VERSION#v}.linux-${ARCH}.tar.gz
+  sudo wget https://github.com/prometheus/node_exporter/releases/download/$NODE_EXPORTER_VERSION/node_exporter-${NODE_EXPORTER_VERSION#v}.linux-${ARCH}.tar.gz
   check_success
 
-  tar xvf node_exporter-${NODE_EXPORTER_VERSION#v}.linux-${ARCH}.tar.gz
+  echo "📌 Installing Node Exporter ($NODE_EXPORTER_VERSION)..."
+  sudo tar xvf node_exporter-${NODE_EXPORTER_VERSION#v}.linux-${ARCH}.tar.gz
   check_success
   sudo mv node_exporter-${NODE_EXPORTER_VERSION#v}.linux-${ARCH}/node_exporter .
   rm -rf node_exporter-${NODE_EXPORTER_VERSION#v}*
@@ -81,14 +82,14 @@ install_prometheus() {
   echo "📌 Installing Prometheus ($PROMETHEUS_VERSION)..."
   sudo mkdir -p /etc/prometheus /var/lib/prometheus
   cd /usr/local/bin
-  wget https://github.com/prometheus/prometheus/releases/download/$PROMETHEUS_VERSION/prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}.tar.gz
+  sudo wget https://github.com/prometheus/prometheus/releases/download/$PROMETHEUS_VERSION/prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}.tar.gz
   check_success
 
-  tar xvf prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}.tar.gz
+  sudo tar xvf prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}.tar.gz
   check_success
   sudo mv prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}/prometheus prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}/promtool .
   sudo mv prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}/consoles prometheus-${PROMETHEUS_VERSION#v}.linux-${ARCH}/console_libraries /etc/prometheus/
-  rm -rf prometheus-${PROMETHEUS_VERSION#v}*
+  sudo rm -rf prometheus-${PROMETHEUS_VERSION#v}*
 
   # Create Prometheus Configuration
   sudo tee /etc/prometheus/prometheus.yml > /dev/null <<EOF
@@ -128,12 +129,12 @@ install_grafana() {
   check_success
 
   echo "📌 Installing Grafana ($GRAFANA_VERSION)..."
-  wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION#v}_${ARCH}.deb
+  sudo wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION#v}_${ARCH}.deb
   check_success
 
   sudo dpkg -i grafana_${GRAFANA_VERSION#v}_${ARCH}.deb
   check_success
-  rm -f grafana_${GRAFANA_VERSION#v}_${ARCH}.deb
+  sudo rm -f grafana_${GRAFANA_VERSION#v}_${ARCH}.deb
 }
 
 # ---------------------- Start Services ----------------------
@@ -151,14 +152,14 @@ start_services() {
 }
 
 # ---------------------- Configure Firewall ----------------------
-function update_firewall() {
+configure_firewall() {
     # Check if iptables is installed
     if ! command -v iptables &> /dev/null; then
         echo "⚠️ iptables is not installed. Skipping firewall configuration..."
         return 0
     fi
 
-    info "Updating firewall rules"
+    echo "⚠️ Updating firewall rules"
     RULES=(
         "INPUT -p tcp -m state --state NEW -m tcp --dport 3000 -j ACCEPT"
         "INPUT -p tcp -m state --state NEW -m tcp --dport 9090 -j ACCEPT"
@@ -182,13 +183,14 @@ function update_firewall() {
         sudo mv "${TMP_FILE}" /etc/iptables/rules.v4
         echo "📌 Firewall rules updated and saved."
     else
-        echo "No new firewall rules to add. Firewall is up-to-date."
+        echo "📌 No new firewall rules to add. Firewall is up-to-date."
     fi
     echo "✅ Firewall configuration completed."
     check_success
 }
 # ---------------------- Final Status ----------------------
 display_status() {
+  echo "--------------------------------------"
   echo "✅ Installation Complete!"
   echo "--------------------------------------"
   echo "🌐 Access Grafana: http://$(curl -s ifconfig.me):3000"
