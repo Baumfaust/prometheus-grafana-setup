@@ -1,0 +1,28 @@
+name: Test Monitoring Script
+
+on:
+  push:
+    branches:
+      - main  # Runs the test when pushing to the main branch
+  pull_request:
+    branches:
+      - main  # Runs on pull requests to main
+
+jobs:
+  test-script:
+    runs-on: ubuntu-latest  # Runs on a fresh Ubuntu machine
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run the monitoring install_monitoring script
+        run: |
+          chmod +x install_monitoring.sh  # Ensure the script is executable
+          ./install_monitoring.sh  # Run the script
+
+      - name: Check if services are running
+        run: |
+          systemctl is-active --quiet prometheus && echo "✅ Prometheus is running" || exit 1
+          systemctl is-active --quiet node_exporter && echo "✅ Node Exporter is running" || exit 1
+          systemctl is-active --quiet grafana-server && echo "✅ Grafana is running" || exit 1
