@@ -22,11 +22,22 @@ detect_architecture() {
   echo "🚀 Detected Architecture: $ARCH"
 }
 
-# Function to update system
+# ---------------------- Check Reboot System ----------------------
+check_reboot_required() {
+  if [ -f /var/run/reboot-required ]; then
+    echo "⚠️ A reboot is required after the system update. Please reboot and run the script again."
+    exit 1
+  fi
+}
+
+# ---------------------- Update System ----------------------
 update_system() {
   echo "🚀 Updating System..."
   sudo apt-get update && sudo apt-get upgrade -y
   check_success
+
+  # Check for reboot after upgrade
+  check_reboot_required
 }
 
 # ---------------------- Install Node Exporter ----------------------
