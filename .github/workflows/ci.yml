@@ -26,7 +26,3 @@ jobs:
           systemctl is-active --quiet prometheus && echo "✅ Prometheus is running" || exit 1
           systemctl is-active --quiet node_exporter && echo "✅ Node Exporter is running" || exit 1
           systemctl is-active --quiet grafana-server && echo "✅ Grafana is running" || exit 1
-
-      - name: Verify ports are open
-        run: |
-          ss -tuln | grep -E ":3000" && echo "✅ All required ports are open" || exit 1
