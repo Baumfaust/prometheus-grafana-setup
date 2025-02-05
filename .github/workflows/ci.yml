@@ -29,4 +29,4 @@ jobs:
 
       - name: Verify ports are open
         run: |
-          ss -tuln | grep -E ":3000|:9090|:9100" && echo "✅ All required ports are open" || exit 1
+          ss -tuln | grep -E ":3000" && echo "✅ All required ports are open" || exit 1

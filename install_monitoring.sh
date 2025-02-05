@@ -25,7 +25,7 @@ detect_architecture() {
 # Function to update system
 update_system() {
   echo "🚀 Updating System..."
-  sudo apt update && sudo apt upgrade -y
+  sudo apt-get update && sudo apt-get upgrade -y
   check_success
 }
 
