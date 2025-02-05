@@ -16,10 +16,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run the monitoring setup script
+      - name: Run the monitoring install_monitoring script
         run: |
-          chmod +x setup.sh  # Ensure the script is executable
-          ./setup.sh  # Run the script
+          chmod +x install_monitoring.sh  # Ensure the script is executable
+          ./install_monitoring.sh  # Run the script
 
       - name: Check if services are running
         run: |
