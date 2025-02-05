@@ -18,8 +18,8 @@ jobs:
 
       - name: Run the monitoring install_monitoring script
         run: |
-          chmod +x update_firewall.sh  # Ensure the script is executable
-          ./update_firewall.sh  # Run the script
+          chmod +x install_monitoring.sh  # Ensure the script is executable
+          ./install_monitoring.sh  # Run the script
 
       - name: Check if services are running
         run: |
